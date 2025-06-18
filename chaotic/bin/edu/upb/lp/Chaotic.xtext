@@ -1,0 +1,9 @@
+grammar edu.upb.lp.Chaotic with org.eclipse.xtext.common.Terminals
+
+generate chaotic "http://www.upb.edu/lp/Chaotic"
+
+Model:
+	greetings+=Greeting*;
+	
+Greeting:
+	'Hello' name=ID '!';
