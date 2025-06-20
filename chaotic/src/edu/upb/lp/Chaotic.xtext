@@ -2,8 +2,74 @@ grammar edu.upb.lp.Chaotic with org.eclipse.xtext.common.Terminals
 
 generate chaotic "http://www.upb.edu/lp/Chaotic"
 
-Model:
-	greetings+=Greeting*;
+//Estructura del programa
+Program:	
+	userSection = UserSection
+	channelSection = ChannelSection
+	execution = ChatSection
+;
+
+UserSection:
+	{UserSection} 'Usuarios conectados:'
+	(users += UserDeclaration | 'Vaya, parece que no hay nadie.')
+;
+
+ChannelSection:
+	{ChannelSection} 'Canales disponibles:'
+	(channels += ChannelOperation | 'Vaya, parece que no hay canales adicionales.')
+;
+
+ChatSection:
+	{ChatSection} 'Chat #General'
+	'Hola muchachada!'
 	
-Greeting:
-	'Hello' name=ID '!';
+	'Mañana hay examen de compilación, nos vimo :p'
+;
+
+//Gramática para UserSection, Variables
+UserDeclaration:
+	'Saluden a' name=UserField 'el nuevo miembro de' '$' type=DataType '.'
+;
+
+UserField:
+	'@' name=ID
+;
+
+//Gramática para ChannelSection
+ChannelOperation:
+	'Se ha creado un nuevo canal llamado' 
+	'#' name=ID
+	returnType = (ReturnTypeDeclaration)?
+	('se encuentra disponible para los siguientes roles:' '[' 
+		params+=ParamField (',' params+=ParamField)*
+	']')?
+	':'
+	body=ChannelBody
+	'Esperemos sea de su agrado.'
+;
+
+ReturnTypeDeclaration:
+	 'para los miembros de $' type=DataType
+;
+
+ParamField:
+	'$' type=DataType 'también llamado' name=ID
+;
+
+ChannelBody:
+	//Temporalmente
+	ID
+;
+
+//Gramática para ChatSection
+
+
+
+
+
+//Tipos de Datos
+DataType:
+	//Temporalmente
+	ID
+;
+

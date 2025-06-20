@@ -12,3 +12,14 @@ xtend-gen/
 *.xml_gen
 
 # End of https://www.toptal.com/developers/gitignore/api/xtext
+
+chaotic.ide/bin
+chaotic.ide/src
+chaotic.ui/bin/
+plugin.xml
+chaotic.ui/src/
+generator/
+scoping/
+chaotic/.antlr-generator-3.2.0-patch.jar
+chaotic/src/edu/upb/lp/ChaoticRuntimeModule.java
+chaotic/src/edu/upb/lp/ChaoticStandaloneSetup.java
