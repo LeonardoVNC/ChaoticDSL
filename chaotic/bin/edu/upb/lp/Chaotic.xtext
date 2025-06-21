@@ -81,12 +81,63 @@ ChannelCall:
 
 //Tipos de Datos
 DataType:
-	//Temporalmente
-	ID
+	name=( EnteroType | BoolType | CadenasType | DecType )
 ;
 
+EnteroType:
+	'Enteros'
+;
+
+BoolType:
+	'Bools'
+;
+
+CadenasType:
+	'Cadenas'
+;
+
+DecType:
+	'Decimales'
+;
+
+//Expressions
 Expression:
-	//Temporalmente
-	INT | ID
+	SingleExpression | PairExpression
+;
+
+
+SingleExpression:
+	PrimLiteral | DerLiteral 
+;
+
+PrimLiteral:
+	IntLiteral | DecLiteral | BoolLiteral
+;
+
+DerLiteral:
+	CadenasLiteral
+;
+
+
+PairExpression:
+	
+;
+
+//Literals
+IntLiteral:
+	value = INT
+;
+
+DecLiteral:
+	//Corrige esto
+	value = INT'.'INT
+;
+
+BoolLiteral:
+	value=('true' | 'false')
+;
+
+CadenasLiteral:
+	value=STRING
 ;
 
