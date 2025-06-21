@@ -3,6 +3,16 @@
  */
 package edu.upb.lp.validation;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.eclipse.xtext.validation.Check;
+
+import edu.upb.lp.chaotic.ChannelOperation;
+import edu.upb.lp.chaotic.ChaoticPackage;
+import edu.upb.lp.chaotic.Program;
+import edu.upb.lp.chaotic.UserDeclaration;
+import edu.upb.lp.chaotic.UserSection;
 
 /**
  * This class contains custom validation rules. 
@@ -21,5 +31,27 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 //					INVALID_NAME);
 //		}
 //	}
+//	@Check
+//	public void checkNumArgs(FunctionCall f ) {
+//		if (f.getArgs().size() != f.getFunction().getParams().size()) {
+//			error("Cantidad de argumentos inesperada", MyWiwiLanguajePackage.Literals.FUNCTION_CALL__ARGS);
+//		}
+//	}
+	
+	@Check
+	public void checkUsersID(UserSection us) {
+	    Set<String> users = new HashSet<>();
+	    for (UserDeclaration userDeclaration : us.getUsers()) {
+	        String currentID = userDeclaration.getName().getName();
+	        if (users.contains(currentID)) {
+	            error("El nombre de usuario \"" + currentID + "\" ya está siento utilizado.", 
+	            		userDeclaration.getName(), null);
+	        } else {
+	            users.add(currentID);
+	        }
+	    }
+	}
 	
 }
+
+
