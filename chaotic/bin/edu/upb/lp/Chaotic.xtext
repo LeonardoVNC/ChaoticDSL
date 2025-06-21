@@ -68,7 +68,9 @@ IfInstruction:
 ;
 
 WhileInstruction:
-	'AVISO! Mientras'condition=Expression 'se procederá a:'
+	'AVISO! Mientras'
+	'<'condition=Expression'>' 
+	'se procederá a:'
 	body=InstructionBody
 	'Gracias por su atención.'
 ;
@@ -102,7 +104,11 @@ DecType:
 
 //Expressions
 Expression:
-	SingleExpression | PairExpression | SingleOperatorExpression | UserDataReference
+	first = ( SingleExpression | SingleOperatorExpression | UserDataReference ) second = TempExpression
+;
+
+TempExpression:
+	(operador=PairOperator secondValue=Expression follow=TempExpression)?
 ;
 
 
@@ -118,11 +124,6 @@ DerLiteral:
 	CadenasLiteral
 ;
 
-//Recursividad izquierda, piensa en el resto antes de resolver esto
-PairExpression:
-	firstValue = Expression operador=PairOperator secondValue=Expression
-;
-
 PairOperator: 
 	Plus | Less | Mult | Div | And | Or | Equals | Greater | GreaterEq | Concat
 ;
@@ -134,7 +135,7 @@ SingleOperatorExpression:
 
 
 UserDataReference:
-	'Hablando con' '@' user=[UserField]
+	'@' user=[UserField]
 ;
 
 //Literals
@@ -180,10 +181,10 @@ CadenasLiteral:
 		'es igual a'
 	;
 	Greater:
-		'le gana a'
+		'le gana a' | 'le gane a'
 	;
 	GreaterEq:
-		'le podria ganar a'
+		'le podria ganar a' | 'le pueda ganar a'
 	;
 	//Cadenas
 	Concat:
