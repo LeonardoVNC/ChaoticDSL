@@ -25,4 +25,5 @@ Export-Package: edu.upb.lp.validation,
  edu.upb.lp.chaotic.util,
  edu.upb.lp.parser.antlr,
  edu.upb.lp.scoping
-Import-Package: org.apache.log4j
+Import-Package: edu.upb.lp.generator,
+ org.apache.log4j
