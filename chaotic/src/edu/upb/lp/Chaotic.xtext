@@ -102,7 +102,7 @@ DecType:
 
 //Expressions
 Expression:
-	SingleExpression | PairExpression
+	SingleExpression | PairExpression | SingleOperatorExpression | UserDataReference
 ;
 
 
@@ -118,9 +118,23 @@ DerLiteral:
 	CadenasLiteral
 ;
 
-
+//Recursividad izquierda, piensa en el resto antes de resolver esto
 PairExpression:
-	
+	firstValue = Expression operador=PairOperator secondValue=Expression
+;
+
+PairOperator: 
+	Plus | Less | Mult | Div | And | Or | Equals | Greater | GreaterEq | Concat
+;
+
+
+SingleOperatorExpression:
+	operator = (BoolNegation | IntNegative) expression=Expression
+;
+
+
+UserDataReference:
+	'Hablando con' '@' user=[UserField]
 ;
 
 //Literals
@@ -141,3 +155,46 @@ CadenasLiteral:
 	value=STRING
 ;
 
+//PairOperators
+	//Numbers
+	Plus:
+		'+'
+	;
+	Less:
+		'-'
+	;
+	Mult:
+		'*'
+	;
+	Div:
+		'/'
+	;
+	//Bools
+	And:
+		'y'
+	;
+	Or:
+		'o'
+	;
+	Equals:
+		'es igual a'
+	;
+	Greater:
+		'le gana a'
+	;
+	GreaterEq:
+		'le podria ganar a'
+	;
+	//Cadenas
+	Concat:
+		'junto a'
+	;
+
+//SingleOperators
+BoolNegation:
+	'Ignoren a ese'
+;
+
+IntNegative:
+	'Salio medio negativo el'
+;
