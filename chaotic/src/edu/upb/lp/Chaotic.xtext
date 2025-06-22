@@ -201,3 +201,9 @@ BoolNegation:
 IntNegative:
 	'Salio medio negativo el'
 ;
+
+//Comentarios
+@Override 
+terminal ML_COMMENT : 'Por cierto...' -> 'nada eso...';
+@Override 
+terminal SL_COMMENT : 'Ah si,' !('\n'|'\r')* ('\r'? '\n')?;
