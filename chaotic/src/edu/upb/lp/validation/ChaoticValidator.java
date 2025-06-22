@@ -8,9 +8,12 @@ import java.util.Set;
 
 import org.eclipse.xtext.validation.Check;
 
+import edu.upb.lp.chaotic.ChannelCall;
 import edu.upb.lp.chaotic.ChannelOperation;
 import edu.upb.lp.chaotic.ChannelSection;
 import edu.upb.lp.chaotic.ChaoticPackage;
+import edu.upb.lp.chaotic.ChatSection;
+import edu.upb.lp.chaotic.Program;
 import edu.upb.lp.chaotic.UserDeclaration;
 import edu.upb.lp.chaotic.UserSection;
 
@@ -63,6 +66,26 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 			} else {
 				channels.add(currentChannelID);
 			}
+		}
+	}
+	
+	@Check
+	public void checkChannelUsage(Program p) {
+		ChannelSection cns = p.getChannelSection();
+		ChatSection cts = p.getExecution();
+		Set<ChannelOperation> declaredChannels = new HashSet<>();
+		for (ChannelOperation channelOperation : cns.getChannels()) {
+			declaredChannels.add(channelOperation);
+		}
+		for (ChannelCall channelCall : cts.getBody().getChannels()) {
+			ChannelOperation currentChannel = channelCall.getName();
+			if (declaredChannels.contains(currentChannel)) {
+				declaredChannels.remove(currentChannel);
+			}
+		}
+		for (ChannelOperation notUsedChannel : declaredChannels) {
+			warning("El canal #" + notUsedChannel.getName() + " no está siendo utilizado.",
+					notUsedChannel, null);
 		}
 	}
 	

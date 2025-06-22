@@ -49,7 +49,7 @@ ParamField:
 
 InstructionBody:
 	{InstructionBody} 
-	instructions+=(UserAsignation | PrintLine | IfInstruction | WhileInstruction | ChannelCall)*
+	(asignations+=UserAsignation | prints+=PrintLine | ifs+=IfInstruction | whiles+=WhileInstruction | channels+=ChannelCall)*
 ;
 
 //Operaciones - Body
