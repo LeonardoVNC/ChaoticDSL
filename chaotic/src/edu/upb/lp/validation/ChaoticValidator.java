@@ -11,7 +11,6 @@ import org.eclipse.xtext.validation.Check;
 import edu.upb.lp.chaotic.ChannelCall;
 import edu.upb.lp.chaotic.ChannelOperation;
 import edu.upb.lp.chaotic.ChannelSection;
-import edu.upb.lp.chaotic.ChaoticPackage;
 import edu.upb.lp.chaotic.ChatSection;
 import edu.upb.lp.chaotic.Program;
 import edu.upb.lp.chaotic.UserDeclaration;
@@ -23,24 +22,6 @@ import edu.upb.lp.chaotic.UserSection;
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
 public class ChaoticValidator extends AbstractChaoticValidator {
-	
-//	public static final String INVALID_NAME = "invalidName";
-//
-//	@Check
-//	public void checkGreetingStartsWithCapital(Greeting greeting) {
-//		if (!Character.isUpperCase(greeting.getName().charAt(0))) {
-//			warning("Name should start with a capital",
-//					ChaoticPackage.Literals.GREETING__NAME,
-//					INVALID_NAME);
-//		}
-//	}
-//	@Check
-//	public void checkNumArgs(FunctionCall f ) {
-//		if (f.getArgs().size() != f.getFunction().getParams().size()) {
-//			error("Cantidad de argumentos inesperada", MyWiwiLanguajePackage.Literals.FUNCTION_CALL__ARGS);
-//		}
-//	}
-	
 	@Check
 	public void checkUsersID(UserSection us) {
 	    Set<String> users = new HashSet<>();
@@ -86,6 +67,18 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 		for (ChannelOperation notUsedChannel : declaredChannels) {
 			warning("El canal #" + notUsedChannel.getName() + " no está siendo utilizado.",
 					notUsedChannel, null);
+		}
+	}
+	
+	@Check
+	public void checkChannelBody(ChannelOperation c) {
+		int instruccions = c.getBody().getAsignations().size();
+		instruccions += c.getBody().getPrints().size();
+		instruccions += c.getBody().getIfs().size();
+		instruccions += c.getBody().getWhiles().size();
+		instruccions += c.getBody().getChannels().size();
+		if (instruccions == 0) {
+			warning("El cuerpo del canal #" + c.getName() + " está vació.", c, null);
 		}
 	}
 	
