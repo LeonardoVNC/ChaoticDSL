@@ -80,29 +80,19 @@ ChannelCall:
 ;
 
 //Tipos de Datos
-DataType:
-	name=( EnteroType | BoolType | CadenasType | DecType )
-;
-
-EnteroType:
-	'Enteros'
-;
-
-BoolType:
-	'Bools'
-;
-
-CadenasType:
-	'Cadenas'
-;
-
-DecType:
-	'Decimales'
+enum DataType:
+	EnteroType = 'Enteros' | BoolType='Bools' | CadenasType = 'Cadenas' | DecType='Decimales'
 ;
 
 //Expressions
 Expression:
-	first = ( SingleExpression | SingleOperatorExpression | UserDataReference ) second = TempExpression
+	(
+		singleExpr = SingleExpression | 
+		singleOpExpr = SingleOperatorExpression |
+		userRef = UserDataReference |
+		parenthesisExpr = ParenthesisExpression
+	)
+	(second = TempExpression)
 ;
 
 TempExpression:
@@ -111,29 +101,30 @@ TempExpression:
 
 
 SingleExpression:
-	PrimLiteral | DerLiteral 
+	literal = (IntLiteral | DecLiteral | BoolLiteral | CadenasLiteral) 
 ;
 
-PrimLiteral:
-	IntLiteral | DecLiteral | BoolLiteral
+enum PairOperator:
+	Plus = '+' | Less = '-' | Mult = '*' | Div = '/' | And = 'y' | Or = 'o' | Equal = 'es igual a' | 
+	Greater = 'le gana a' | GreaterP = 'le gane a' | GreaterEq = 'le podria ganar a' | 
+	GreaterEqP = 'le pueda ganar a' | Concat = 'junto a'
 ;
 
-DerLiteral:
-	CadenasLiteral
+enum SingleOperator:
+	BoolNegation = 'Ignoren a ese' | IntNegative = 'Salio medio negativo el'
 ;
-
-PairOperator: 
-	Plus | Less | Mult | Div | And | Or | Equals | Greater | GreaterEq | Concat
-;
-
 
 SingleOperatorExpression:
-	operator = (BoolNegation | IntNegative) expression=Expression
+	operator = SingleOperator expression=Expression
 ;
 
 
 UserDataReference:
 	'@' user=[UserDeclaration]
+;
+
+ParenthesisExpression:
+	'(' expression = Expression ')'
 ;
 
 //Literals
@@ -142,8 +133,7 @@ IntLiteral:
 ;
 
 DecLiteral:
-	//Corrige esto
-	value = INT'.'INT
+	mainValue = INT '.' decimalValue=INT
 ;
 
 BoolLiteral:
@@ -154,49 +144,6 @@ CadenasLiteral:
 	value=STRING
 ;
 
-//PairOperators
-	//Numbers
-	Plus:
-		'+'
-	;
-	Less:
-		'-'
-	;
-	Mult:
-		'*'
-	;
-	Div:
-		'/'
-	;
-	//Bools
-	And:
-		'y'
-	;
-	Or:
-		'o'
-	;
-	Equals:
-		'es igual a'
-	;
-	Greater:
-		'le gana a' | 'le gane a'
-	;
-	GreaterEq:
-		'le podria ganar a' | 'le pueda ganar a'
-	;
-	//Cadenas
-	Concat:
-		'junto a'
-	;
-
-//SingleOperators
-BoolNegation:
-	'Ignoren a ese'
-;
-
-IntNegative:
-	'Salio medio negativo el'
-;
 
 //Comentarios
 @Override 

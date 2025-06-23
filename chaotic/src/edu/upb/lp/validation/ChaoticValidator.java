@@ -6,15 +6,23 @@ package edu.upb.lp.validation;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.validation.Check;
 
+import edu.upb.lp.chaotic.BoolLiteral;
+import edu.upb.lp.chaotic.CadenasLiteral;
 import edu.upb.lp.chaotic.ChannelCall;
 import edu.upb.lp.chaotic.ChannelOperation;
 import edu.upb.lp.chaotic.ChannelSection;
 import edu.upb.lp.chaotic.ChatSection;
 import edu.upb.lp.chaotic.DataType;
+import edu.upb.lp.chaotic.DecLiteral;
 import edu.upb.lp.chaotic.Expression;
+import edu.upb.lp.chaotic.IntLiteral;
 import edu.upb.lp.chaotic.Program;
+import edu.upb.lp.chaotic.SingleExpression;
+import edu.upb.lp.chaotic.SingleOperator;
+import edu.upb.lp.chaotic.SingleOperatorExpression;
 import edu.upb.lp.chaotic.UserAsignation;
 import edu.upb.lp.chaotic.UserDeclaration;
 import edu.upb.lp.chaotic.UserSection;
@@ -85,9 +93,53 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 		}
 	}
 	
+	
 	public DataType getDataTypeFromExp(Expression e) {
+		//Mi caso base son los literales y los llamados a variables
+		DataType firstType = null;
+		if (e.getSingleExpr() != null) {
+			firstType = getDataTypeFromSingleExpression(e.getSingleExpr());
+		} else if (e.getUserRef() != null) {
+			firstType = e.getUserRef().getUser().getType();
+		} else if (e.getParenthesisExpr() != null) {
+			firstType = getDataTypeFromExp(e.getParenthesisExpr().getExpression());
+		} else if (e.getSingleOpExpr() != null) {
+			firstType = getDataTypeFromSingleOperator(e.getSingleOpExpr().getOperator());
+		} 
+		if (e.getSecond() != null) {
+			//Implementar lógica
+			
+			return DataType.DEC_TYPE; //Cambia el return dx
+		} else {
+			return firstType;	
+		}
 		
-		return null;
+		
+	}
+	
+	public DataType getDataTypeFromSingleExpression(SingleExpression se) {
+		EObject literal = se.getLiteral();
+		if (literal instanceof IntLiteral) {
+			return DataType.ENTERO_TYPE;
+		} else if (literal instanceof DecLiteral){
+			return DataType.DEC_TYPE;
+		} else if (literal instanceof BoolLiteral) {
+			return DataType.BOOL_TYPE;
+		} else if (literal instanceof CadenasLiteral) {
+			return DataType.CADENAS_TYPE;
+		} else {
+			return null;
+		}
+	}
+	
+	public DataType getDataTypeFromSingleOperator(SingleOperator operator) {
+		if (operator == SingleOperator.BOOL_NEGATION) {
+			return DataType.BOOL_TYPE ;
+		} else if (operator == SingleOperator.INT_NEGATIVE) {
+			return DataType.ENTERO_TYPE;
+		} else {
+			return null;
+		}
 	}
 	
 	@Check
@@ -102,6 +154,16 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 		}
 	}
 	
+	@Check
+	public void checkSingleOperatorDataType(SingleOperatorExpression soe) {
+		DataType expressionType = getDataTypeFromExp(soe.getExpression());
+		SingleOperator operator = soe.getOperator();
+		DataType operatorType = getDataTypeFromSingleOperator(operator);
+		
+		if (expressionType != operatorType) {
+			error("La expresión pertenece a $" + expressionType + ", mientras que el operador pertence a $" + operatorType, soe, null);
+		}
+	}
 }
 
 
