@@ -19,10 +19,12 @@ import edu.upb.lp.chaotic.DataType;
 import edu.upb.lp.chaotic.DecLiteral;
 import edu.upb.lp.chaotic.Expression;
 import edu.upb.lp.chaotic.IntLiteral;
+import edu.upb.lp.chaotic.PairOperator;
 import edu.upb.lp.chaotic.Program;
 import edu.upb.lp.chaotic.SingleExpression;
 import edu.upb.lp.chaotic.SingleOperator;
 import edu.upb.lp.chaotic.SingleOperatorExpression;
+import edu.upb.lp.chaotic.TempExpression;
 import edu.upb.lp.chaotic.UserAsignation;
 import edu.upb.lp.chaotic.UserDeclaration;
 import edu.upb.lp.chaotic.UserSection;
@@ -107,9 +109,13 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 			firstType = getDataTypeFromSingleOperator(e.getSingleOpExpr().getOperator());
 		} 
 		if (e.getSecond() != null) {
-			//Implementar lógica
-			
-			return DataType.DEC_TYPE; //Cambia el return dx
+			DataType expressionType = validateTemporalExpression(firstType, e.getSecond());
+			//Operación inválida lanza un null
+			if (expressionType == null) {
+				return null; 
+			} else {
+				return expressionType;
+			}
 		} else {
 			return firstType;	
 		}
@@ -142,13 +148,52 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 		}
 	}
 	
+	public DataType validateTemporalExpression(DataType firstType, TempExpression second) {
+		PairOperator operator = second.getOperador();
+		DataType secondType = getDataTypeFromExp(second.getSecondValue());
+		DataType expressionType = null;
+		
+		if (operator == PairOperator.PLUS|| operator == PairOperator.LESS|| operator == PairOperator.MULT|| operator == PairOperator.DIV) {
+			if (firstType == DataType.ENTERO_TYPE && secondType == DataType.ENTERO_TYPE) expressionType = DataType.ENTERO_TYPE;
+			if (firstType == DataType.ENTERO_TYPE && secondType == DataType.DEC_TYPE ||
+				firstType == DataType.DEC_TYPE && secondType == DataType.ENTERO_TYPE ||
+				firstType == DataType.DEC_TYPE  && secondType == DataType.DEC_TYPE ) expressionType = DataType.DEC_TYPE;
+		} else if (operator == PairOperator.AND && operator == PairOperator.OR) {
+			if(firstType == DataType.BOOL_TYPE && secondType == DataType.BOOL_TYPE) expressionType = DataType.BOOL_TYPE;
+		} else if (operator == PairOperator.GREATER|| operator == PairOperator.GREATER_P||
+				operator == PairOperator.GREATER_EQ|| operator == PairOperator.GREATER_EQ_P ) {
+			if (firstType == DataType.ENTERO_TYPE && secondType == DataType.ENTERO_TYPE ||
+				firstType == DataType.ENTERO_TYPE && secondType == DataType.DEC_TYPE ||
+				firstType == DataType.DEC_TYPE && secondType == DataType.ENTERO_TYPE ||
+				firstType == DataType.DEC_TYPE  && secondType == DataType.DEC_TYPE ) expressionType = DataType.BOOL_TYPE;
+		} else if (operator == PairOperator.EQUAL) {
+			if (firstType == DataType.ENTERO_TYPE && secondType == DataType.ENTERO_TYPE ||
+					firstType == DataType.ENTERO_TYPE && secondType == DataType.DEC_TYPE ||
+					firstType == DataType.DEC_TYPE && secondType == DataType.ENTERO_TYPE ||
+					firstType == DataType.DEC_TYPE  && secondType == DataType.DEC_TYPE ||
+					firstType == DataType.BOOL_TYPE && secondType == DataType.BOOL_TYPE) expressionType = DataType.BOOL_TYPE;
+		} else if (operator == PairOperator.CONCAT) {
+			if (firstType == DataType.CADENAS_TYPE || secondType == DataType.CADENAS_TYPE) expressionType = DataType.CADENAS_TYPE;
+		} else {
+			return null;
+		}
+		
+		if (second.getFollow() == null) {
+			return expressionType;
+		} else {
+			return validateTemporalExpression(expressionType, second.getFollow());
+		}
+	}
+	
 	@Check
 	public void checkAsignationDataType(UserAsignation ua) {
 		DataType userType = ua.getUser().getType();
 		Expression expr = ua.getValue();
 		
 		DataType exprType = getDataTypeFromExp(expr);
-		if (userType != exprType) {
+		if (exprType == null) {
+			error ("Operaciones inválidas para estos tipos de datos.", ua, null);
+		} else if (userType != exprType) {
 			error("El usuario @" + ua.getUser().getName() + " forma parte de $" + userType.getName() + ", no de $" + exprType.getName(),
 					ua, null);
 		}
