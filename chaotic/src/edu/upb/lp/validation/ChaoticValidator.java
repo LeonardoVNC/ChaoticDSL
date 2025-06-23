@@ -12,7 +12,10 @@ import edu.upb.lp.chaotic.ChannelCall;
 import edu.upb.lp.chaotic.ChannelOperation;
 import edu.upb.lp.chaotic.ChannelSection;
 import edu.upb.lp.chaotic.ChatSection;
+import edu.upb.lp.chaotic.DataType;
+import edu.upb.lp.chaotic.Expression;
 import edu.upb.lp.chaotic.Program;
+import edu.upb.lp.chaotic.UserAsignation;
 import edu.upb.lp.chaotic.UserDeclaration;
 import edu.upb.lp.chaotic.UserSection;
 
@@ -26,10 +29,10 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 	public void checkUsersID(UserSection us) {
 	    Set<String> users = new HashSet<>();
 	    for (UserDeclaration userDeclaration : us.getUsers()) {
-	        String currentID = userDeclaration.getName().getName();
+	        String currentID = userDeclaration.getName();
 	        if (users.contains(currentID)) {
 	            error("El nombre de usuario \"" + currentID + "\" ya está siento utilizado.", 
-	            		userDeclaration.getName(), null);
+	            		userDeclaration, null);
 	        } else {
 	            users.add(currentID);
 	        }
@@ -79,6 +82,23 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 		instruccions += c.getBody().getChannels().size();
 		if (instruccions == 0) {
 			warning("El cuerpo del canal #" + c.getName() + " está vació.", c, null);
+		}
+	}
+	
+	public DataType getDataTypeFromExp(Expression e) {
+		
+		return null;
+	}
+	
+	@Check
+	public void checkAsignationDataType(UserAsignation ua) {
+		DataType userType = ua.getUser().getType();
+		Expression expr = ua.getValue();
+		
+		DataType exprType = getDataTypeFromExp(expr);
+		if (userType != exprType) {
+			error("El usuario @" + ua.getUser().getName() + " forma parte de $" + userType.getName() + ", no de $" + exprType.getName(),
+					ua, null);
 		}
 	}
 	

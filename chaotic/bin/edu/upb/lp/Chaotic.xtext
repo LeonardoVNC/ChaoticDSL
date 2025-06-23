@@ -28,11 +28,7 @@ ChatSection:
 
 //Gramática para UserSection, Variables
 UserDeclaration:
-	'Saluden a' name=UserField 'el nuevo miembro de' '$' type=DataType '.'
-;
-
-UserField:
-	'@' name=ID
+	'Saluden a' '@' name=ID 'el nuevo miembro de' '$' type=DataType '.'
 ;
 
 //Gramática para ChannelSection
@@ -54,11 +50,11 @@ InstructionBody:
 
 //Operaciones - Body
 UserAsignation:
-	user=[UserField] 'ha cambiado su descripción a:' value=Expression'.'
+	user=[UserDeclaration] 'ha cambiado su descripción a:' value=Expression'.'
 ;
 
 PrintLine:
-	'Que tal todo ' value=[UserField]'?'
+	'Que tal todo ' value=[UserDeclaration]'?'
 ;
 
 IfInstruction:
@@ -137,7 +133,7 @@ SingleOperatorExpression:
 
 
 UserDataReference:
-	'@' user=[UserField]
+	'@' user=[UserDeclaration]
 ;
 
 //Literals
