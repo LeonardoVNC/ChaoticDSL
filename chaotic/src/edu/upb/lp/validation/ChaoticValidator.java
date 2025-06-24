@@ -141,7 +141,7 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 	public DataType getDataTypeFromSingleOperator(SingleOperator operator) {
 		if (operator == SingleOperator.BOOL_NEGATION) {
 			return DataType.BOOL_TYPE ;
-		} else if (operator == SingleOperator.INT_NEGATIVE) {
+		} else if (operator == SingleOperator.INT_NEGATIVE || operator == SingleOperator.INT_PLUS_ONE) {
 			return DataType.ENTERO_TYPE;
 		} else {
 			return null;
@@ -192,9 +192,11 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 		
 		DataType exprType = getDataTypeFromExp(expr);
 		if (exprType == null) {
-			error ("Operaciones inválidas para estos tipos de datos.", ua, null);
+			error ("Operaciones inválidas entre estos tipos de datos." + 
+					"Trate de operar con paréntesis o agregando nuevos usuarios intermedios.", ua, null);
 		} else if (userType != exprType) {
-			error("El usuario @" + ua.getUser().getName() + " forma parte de $" + userType.getName() + ", no de $" + exprType.getName(),
+			error("El usuario @" + ua.getUser().getName() + " forma parte de $" + userType + 
+					", no de $" + exprType,
 					ua, null);
 		}
 	}

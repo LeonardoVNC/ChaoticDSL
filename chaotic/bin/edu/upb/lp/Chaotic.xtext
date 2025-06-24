@@ -59,7 +59,7 @@ PrintLine:
 
 IfInstruction:
 	'ATENCION! Si'
-	'<' condition=Expression '>' 
+	condition=Expression
 	'procederemos a:' 
 	body=InstructionBody
 	'Gracias por su atención.' 
@@ -67,7 +67,7 @@ IfInstruction:
 
 WhileInstruction:
 	'AVISO! Mientras'
-	'<'condition=Expression'>' 
+	condition=Expression
 	'se procederá a:'
 	body=InstructionBody
 	'Gracias por su atención.'
@@ -81,7 +81,7 @@ ChannelCall:
 
 //Tipos de Datos
 enum DataType:
-	EnteroType = 'Enteros' | BoolType='Bools' | CadenasType = 'Cadenas' | DecType='Decimales'
+	EnteroType = 'R20s' | BoolType='Teleco' | CadenasType = 'ComeLibros' | DecType='LosReales'
 ;
 
 //Expressions
@@ -105,13 +105,16 @@ SingleExpression:
 ;
 
 enum PairOperator:
-	Plus = '+' | Less = '-' | Mult = '*' | Div = '/' | And = 'y' | Or = 'o' | Equal = 'es igual a' | 
-	Greater = 'le gana a' | GreaterP = 'le gane a' | GreaterEq = 'le podria ganar a' | 
-	GreaterEqP = 'le pueda ganar a' | Concat = 'junto a'
+	Plus = 'sumando a' | Less = 'restando a' | Mult = 'multiplicando a' | Div = 'dividiendo a' | 
+	And = 'y' | Or = 'o' | Equal = 'es igual a' | Greater = 'le gana a' | 
+	GreaterP = 'le gane a' | GreaterEq = 'le podria ganar a' | GreaterEqP = 'le pueda ganar a' | 
+	Concat = 'junto a'
 ;
 
 enum SingleOperator:
-	BoolNegation = 'Ignoren a ese' | IntNegative = 'Salio medio negativo el'
+	BoolNegation = 'Ignoren a ese' | 
+	IntNegative = 'Salio medio negativo el' | 
+	IntPlusOne = 'Mejorando poco a poco'
 ;
 
 SingleOperatorExpression:
@@ -134,7 +137,7 @@ IntLiteral:
 
 DecLiteral:
 	mainValue = INT '.' decimalValue=INT
-;
+;	
 
 BoolLiteral:
 	value=('true' | 'false')
