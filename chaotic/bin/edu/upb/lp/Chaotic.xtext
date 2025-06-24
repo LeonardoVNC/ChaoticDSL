@@ -45,7 +45,7 @@ ParamField:
 
 InstructionBody:
 	{InstructionBody} 
-	(asignations+=UserAsignation | prints+=PrintLine | ifs+=IfInstruction | whiles+=WhileInstruction | channels+=ChannelCall)*
+	(asignations+=UserAsignation | prints+=PrintLine | ifs+=IfInstruction | whiles+=WhileInstruction | channels+=ChannelCall | exeptions+=BanException)*
 ;
 
 //Operaciones - Body
@@ -156,6 +156,13 @@ BoolLiteral:
 
 CadenasLiteral:
 	value=STRING
+;
+
+BanException:
+	{BanException} 
+	'Silenciar todos los canales del servidor.'
+	(description_flag ?= 'Motivo:' description = CadenasLiteral)?
+	'Traten de cumplir las reglas del seridor.'
 ;
 
 
