@@ -18,6 +18,7 @@ import edu.upb.lp.chaotic.ChatSection;
 import edu.upb.lp.chaotic.DataType;
 import edu.upb.lp.chaotic.DecLiteral;
 import edu.upb.lp.chaotic.Expression;
+import edu.upb.lp.chaotic.FollowExpression;
 import edu.upb.lp.chaotic.IntLiteral;
 import edu.upb.lp.chaotic.PairOperator;
 import edu.upb.lp.chaotic.Program;
@@ -119,8 +120,21 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 		} else {
 			return firstType;	
 		}
-		
-		
+	}
+	
+	public DataType getDataTypeFromExp(FollowExpression e) {
+		//Mi caso base son los literales y los llamados a variables
+		DataType firstType = null;
+		if (e.getSingleExpr() != null) {
+			firstType = getDataTypeFromSingleExpression(e.getSingleExpr());
+		} else if (e.getUserRef() != null) {
+			firstType = e.getUserRef().getUser().getType();
+		} else if (e.getParenthesisExpr() != null) {
+			firstType = getDataTypeFromExp(e.getParenthesisExpr().getExpression());
+		} else if (e.getSingleOpExpr() != null) {
+			firstType = getDataTypeFromSingleOperator(e.getSingleOpExpr().getOperator());
+		} 
+		return firstType;
 	}
 	
 	public DataType getDataTypeFromSingleExpression(SingleExpression se) {
@@ -158,7 +172,7 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 			if (firstType == DataType.ENTERO_TYPE && secondType == DataType.DEC_TYPE ||
 				firstType == DataType.DEC_TYPE && secondType == DataType.ENTERO_TYPE ||
 				firstType == DataType.DEC_TYPE  && secondType == DataType.DEC_TYPE ) expressionType = DataType.DEC_TYPE;
-		} else if (operator == PairOperator.AND && operator == PairOperator.OR) {
+		} else if (operator == PairOperator.AND || operator == PairOperator.OR) {
 			if(firstType == DataType.BOOL_TYPE && secondType == DataType.BOOL_TYPE) expressionType = DataType.BOOL_TYPE;
 		} else if (operator == PairOperator.GREATER|| operator == PairOperator.GREATER_P||
 				operator == PairOperator.GREATER_EQ|| operator == PairOperator.GREATER_EQ_P ) {
@@ -166,7 +180,7 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 				firstType == DataType.ENTERO_TYPE && secondType == DataType.DEC_TYPE ||
 				firstType == DataType.DEC_TYPE && secondType == DataType.ENTERO_TYPE ||
 				firstType == DataType.DEC_TYPE  && secondType == DataType.DEC_TYPE ) expressionType = DataType.BOOL_TYPE;
-		} else if (operator == PairOperator.EQUAL) {
+		} else if (operator == PairOperator.EQUAL || operator == PairOperator.EQUAL_P) {
 			if (firstType == DataType.ENTERO_TYPE && secondType == DataType.ENTERO_TYPE ||
 					firstType == DataType.ENTERO_TYPE && secondType == DataType.DEC_TYPE ||
 					firstType == DataType.DEC_TYPE && secondType == DataType.ENTERO_TYPE ||
@@ -192,7 +206,7 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 		
 		DataType exprType = getDataTypeFromExp(expr);
 		if (exprType == null) {
-			error ("Operaciones inválidas entre estos tipos de datos." + 
+			error ("Operaciones inválidas entre estos tipos de datos. " + 
 					"Trate de operar con paréntesis o agregando nuevos usuarios intermedios.", ua, null);
 		} else if (userType != exprType) {
 			error("El usuario @" + ua.getUser().getName() + " forma parte de $" + userType + 
@@ -211,6 +225,7 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 			error("La expresión pertenece a $" + expressionType + ", mientras que el operador pertence a $" + operatorType, soe, null);
 		}
 	}
+	
 }
 
 

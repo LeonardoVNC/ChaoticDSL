@@ -95,8 +95,17 @@ Expression:
 	(second = TempExpression)
 ;
 
+FollowExpression:
+	(
+		singleExpr = SingleExpression | 
+		singleOpExpr = SingleOperatorExpression |
+		userRef = UserDataReference |
+		parenthesisExpr = ParenthesisExpression
+	)
+;
+
 TempExpression:
-	(operador=PairOperator secondValue=Expression follow=TempExpression)?
+	(operador=PairOperator secondValue=FollowExpression follow=TempExpression)?
 ;
 
 
@@ -106,8 +115,10 @@ SingleExpression:
 
 enum PairOperator:
 	Plus = 'sumando a' | Less = 'restando a' | Mult = 'multiplicando a' | Div = 'dividiendo a' | 
-	And = 'y' | Or = 'o' | Equal = 'es igual a' | Greater = 'le gana a' | 
-	GreaterP = 'le gane a' | GreaterEq = 'le podria ganar a' | GreaterEqP = 'le pueda ganar a' | 
+	And = 'y además' | Or = 'o por otro lado' | 
+	Equal = 'es igual a' | EqualP = 'sea igual a' | 
+	Greater = 'le gana a' | GreaterP = 'le gane a' | 
+	GreaterEq = 'le podria ganar a' | GreaterEqP = 'le pueda ganar a' | 
 	Concat = 'junto a'
 ;
 
@@ -118,7 +129,7 @@ enum SingleOperator:
 ;
 
 SingleOperatorExpression:
-	operator = SingleOperator expression=Expression
+	operator = SingleOperator expression=FollowExpression
 ;
 
 
@@ -127,7 +138,7 @@ UserDataReference:
 ;
 
 ParenthesisExpression:
-	'(' expression = Expression ')'
+	'(' expression = FollowExpression ')'
 ;
 
 //Literals
