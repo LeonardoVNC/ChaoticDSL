@@ -84,7 +84,7 @@ class ChaoticGenerator extends AbstractGenerator {
 	'''
 	«
 	body.map
-	[instruction | "\t" + generateInstruction(instruction)].join('')
+	[instruction | "\t" + generateInstruction(instruction.mode)].join('')
 	»
 	'''
 	

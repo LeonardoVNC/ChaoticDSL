@@ -45,7 +45,7 @@ ParamField:
 ;
 
 Instruction:
-	UserAsignation | PrintLine | IfInstruction | WhileInstruction | ChannelCall | BanException
+	mode = (UserAsignation | PrintLine | IfInstruction | WhileInstruction | ChannelCall | BanException)
 ;
 
 //Operaciones - Body

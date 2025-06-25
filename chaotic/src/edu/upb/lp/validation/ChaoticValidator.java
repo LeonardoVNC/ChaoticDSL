@@ -3,7 +3,9 @@
  */
 package edu.upb.lp.validation;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
@@ -19,6 +21,7 @@ import edu.upb.lp.chaotic.DataType;
 import edu.upb.lp.chaotic.DecLiteral;
 import edu.upb.lp.chaotic.Expression;
 import edu.upb.lp.chaotic.FollowExpression;
+import edu.upb.lp.chaotic.Instruction;
 import edu.upb.lp.chaotic.IntLiteral;
 import edu.upb.lp.chaotic.PairOperator;
 import edu.upb.lp.chaotic.Program;
@@ -29,6 +32,7 @@ import edu.upb.lp.chaotic.TempExpression;
 import edu.upb.lp.chaotic.UserAsignation;
 import edu.upb.lp.chaotic.UserDeclaration;
 import edu.upb.lp.chaotic.UserSection;
+import edu.upb.lp.chaotic.impl.ChannelCallImpl;
 
 /**
  * This class contains custom validation rules. 
@@ -64,27 +68,28 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 		}
 	}
 	
-	/*
 	@Check
 	public void checkChannelUsage(Program p) {
 		ChannelSection cns = p.getChannelSection();
 		ChatSection cts = p.getExecution();
-		Set<ChannelOperation> declaredChannels = new HashSet<>();
+		Map<String, ChannelOperation> declaredChannels = new HashMap<>();
 		for (ChannelOperation channelOperation : cns.getChannels()) {
-			declaredChannels.add(channelOperation);
+			declaredChannels.put(channelOperation.getName(), channelOperation);
 		}
-		for (ChannelCall channelCall : cts.getBody().getChannels()) {
-			ChannelOperation currentChannel = channelCall.getName();
-			if (declaredChannels.contains(currentChannel)) {
-				declaredChannels.remove(currentChannel);
+		for (Instruction instruction: cts.getBody()) {
+			if (instruction.getMode() instanceof ChannelCallImpl) {
+				ChannelCall currentChannel = (ChannelCall)instruction.getMode();
+				if (declaredChannels.containsKey(currentChannel.getName().getName())) {
+					declaredChannels.remove(currentChannel.getName().getName());
+				}
 			}
 		}
-		for (ChannelOperation notUsedChannel : declaredChannels) {
-			warning("El canal #" + notUsedChannel.getName() + " no está siendo utilizado.",
-					notUsedChannel, null);
-		}
+		for (Map.Entry<String, ChannelOperation> entry : declaredChannels.entrySet()) {
+            String channelName = entry.getKey();
+            ChannelOperation operation = entry.getValue();
+            warning("El canal #" + channelName + " no está siendo utilizado.", operation, null);
+        }
 	}
-	*/
 	
 	@Check
 	public void checkChannelBody(ChannelOperation c) {
