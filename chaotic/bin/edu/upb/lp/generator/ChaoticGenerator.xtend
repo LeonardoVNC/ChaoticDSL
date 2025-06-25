@@ -12,13 +12,26 @@ import edu.upb.lp.chaotic.UserSection
 import edu.upb.lp.chaotic.ChannelSection
 import edu.upb.lp.chaotic.ChatSection
 import edu.upb.lp.chaotic.DataType
-import edu.upb.lp.chaotic.InstructionBody
 import edu.upb.lp.chaotic.UserAsignation
 import edu.upb.lp.chaotic.PrintLine
 import edu.upb.lp.chaotic.IfInstruction
 import edu.upb.lp.chaotic.WhileInstruction
 import edu.upb.lp.chaotic.ChannelCall
 import edu.upb.lp.chaotic.BanException
+import edu.upb.lp.chaotic.Instruction
+import edu.upb.lp.chaotic.Expression
+import edu.upb.lp.chaotic.SingleExpression
+import edu.upb.lp.chaotic.SingleOperatorExpression
+import edu.upb.lp.chaotic.UserDataReference
+import edu.upb.lp.chaotic.ParenthesisExpression
+import edu.upb.lp.chaotic.IntLiteral
+import edu.upb.lp.chaotic.DecLiteral
+import edu.upb.lp.chaotic.BoolLiteral
+import edu.upb.lp.chaotic.CadenasLiteral
+import edu.upb.lp.chaotic.SingleOperator
+import edu.upb.lp.chaotic.FollowExpression
+import edu.upb.lp.chaotic.TempExpression
+import edu.upb.lp.chaotic.PairOperator
 
 /**
  * Generates code from your model files on save.
@@ -63,26 +76,97 @@ class ChaoticGenerator extends AbstractGenerator {
 	«
 	cs.getChannels.map
 	[channelOperation | 
-	"private static void " + channelOperation.name + "() throws Exception {\n" + generateBody(channelOperation.body) + "\n}"].	
+	"private static void " + channelOperation.name + "() throws Exception {\n"  + generateBody(channelOperation.body) + "}"].	
 	join('\n')
 	»
 	'''
 	
 	
-	def generateBody(InstructionBody body)
+	def generateBody(Instruction[] body)
 	'''
+			«
+			body.map
+			[instruction | generateInstruction(instruction)].join('')
+			»
 	'''
 	
-	dispatch def generateInstruction(UserAsignation userAsignation)'''user asignation'''
-	dispatch def generateInstruction(PrintLine print)'''print'''
-	dispatch def generateInstruction(IfInstruction ifs)'''if'''
-	dispatch def generateInstruction(WhileInstruction whiles)'''while'''
-	dispatch def generateInstruction(ChannelCall channelCall)'''channel'''
-	dispatch def generateInstruction(BanException exception)'''exception'''
+	dispatch def generateInstruction(UserAsignation userAsignation)
+	'''
+		«userAsignation.user.name» = «generateExpression(userAsignation.value)»;
+	'''
+	dispatch def generateInstruction(PrintLine print)
+	'''
+		System.out.println(«print.value.name»);
+	'''
+	dispatch def generateInstruction(IfInstruction ifs)
+	'''
+		if («generateExpression(ifs.condition)») {
+			«generateBody(ifs.body)»
+		}
+	'''
+	dispatch def generateInstruction(WhileInstruction whiles)
+	'''
+		while («generateExpression(whiles.condition)») {
+			«generateBody(whiles.body)»
+		}
+	'''
+	dispatch def generateInstruction(ChannelCall channelCall)
+	'''
+		«channelCall.name.name»();
+	'''
+	dispatch def generateInstruction(BanException exception)
+	'''
+		throw new Exception(«if (exception.isDescription_flag) {"\"" + exception.description.value + "\""}»);
+	'''
 	
 	def generateMain(ChatSection cs)
 	'''
+		public static void main(String[] args) throws Exception {
+			«generateBody(cs.body)»
+		}
 	'''
+	
+	def generateExpression(Expression e) 
+	'''«if (e.singleExpr !== null) generateSingleExpression(e.singleExpr)
+		else if (e.singleOpExpr !== null) generateSingleOperatorExpression(e.singleOpExpr)
+		else if (e.userRef !== null) generateUserDataReference(e.userRef)
+		else if (e.parenthesisExpr !== null) generateParenthesisExpression(e.parenthesisExpr)»«generateTempExpression(e.second)»'''
+	def generateSingleExpression(SingleExpression e) 
+	'''«generateLiteralValue(e.literal)»'''
+	def generateSingleOperatorExpression(SingleOperatorExpression e) 
+	'''«if (e.operator == SingleOperator.BOOL_NEGATION) '!'+generateFollowExpression(e.expression)
+		else if (e.operator == SingleOperator.INT_NEGATIVE) '-'+generateFollowExpression(e.expression)
+		else if (e.operator == SingleOperator.INT_PLUS_ONE) generateFollowExpression(e.expression)+' + 1'  »'''
+	def generateUserDataReference(UserDataReference e) 
+	'''«e.user.name»'''
+	def generateParenthesisExpression(ParenthesisExpression e) 
+	'''«'('+ generateFollowExpression(e.expression) +')'»'''
+	
+	def generateFollowExpression(FollowExpression e)
+	'''«if (e.singleExpr !== null) generateSingleExpression(e.singleExpr)
+		else if (e.singleOpExpr !== null) generateSingleOperatorExpression(e.singleOpExpr)
+		else if (e.userRef !== null) generateUserDataReference(e.userRef)
+		else if (e.parenthesisExpr !== null) generateParenthesisExpression(e.parenthesisExpr) »'''
+	
+	//Trata de factorizar
+	def generateTempExpression(TempExpression e)
+	'''«if (e === null) ''
+		else if (e.operador == PairOperator.PLUS)' + ' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)
+		else if (e.operador == PairOperator.LESS)' - ' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)
+		else if (e.operador == PairOperator.MULT)' * ' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)
+		else if (e.operador == PairOperator.DIV)' / ' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)
+		else if (e.operador == PairOperator.AND)' && ' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)
+		else if (e.operador == PairOperator.OR)' | |' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)
+		else if (e.operador == PairOperator.EQUAL || e.operador == PairOperator.EQUAL_P)' == ' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)
+		else if (e.operador == PairOperator.GREATER || e.operador == PairOperator.GREATER_P)' > ' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)
+		else if (e.operador == PairOperator.GREATER_EQ || e.operador == PairOperator.GREATER_EQ_P)' >= ' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)
+		else if (e.operador == PairOperator.CONCAT)' + ' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)»'''
+
+	dispatch def generateLiteralValue(IntLiteral i)'''«i.value»'''
+	dispatch def generateLiteralValue(DecLiteral i)'''«i.mainValue + "." + i.decimalValue»'''
+	dispatch def generateLiteralValue(BoolLiteral b)'''«b.value»'''
+	dispatch def generateLiteralValue(CadenasLiteral s)'''"«s.value»"'''
+	
 	
 	val typeMap = newHashMap(
 		DataType.ENTERO_TYPE -> "int",

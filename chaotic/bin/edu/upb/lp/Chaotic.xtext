@@ -23,7 +23,7 @@ ChannelSection:
 ChatSection:
 	{ChatSection} 'Chat #General'
 	'Hola muchachada!'
-	body=InstructionBody
+	body += Instruction*
 	'Mañana hay examen de compilación, nos vimo :p'
 ;
 
@@ -36,7 +36,7 @@ UserDeclaration:
 ChannelOperation:
 	'Se ha creado un nuevo canal llamado' 
 	'#' name=ID	':'
-	body=InstructionBody
+	body += Instruction*
 	'Esperemos sea de su agrado.'
 ;
 
@@ -44,9 +44,8 @@ ParamField:
 	'$' type=DataType 'también llamado' name=ID
 ;
 
-InstructionBody:
-	{InstructionBody} 
-	(asignations+=UserAsignation | prints+=PrintLine | ifs+=IfInstruction | whiles+=WhileInstruction | channels+=ChannelCall | exeptions+=BanException)*
+Instruction:
+	UserAsignation | PrintLine | IfInstruction | WhileInstruction | ChannelCall | BanException
 ;
 
 //Operaciones - Body
@@ -62,7 +61,7 @@ IfInstruction:
 	'ATENCION! Si'
 	condition=Expression
 	'procederemos a:' 
-	body=InstructionBody
+	body += Instruction*
 	'Gracias por su atención.' 
 ;
 
@@ -70,7 +69,7 @@ WhileInstruction:
 	'AVISO! Mientras'
 	condition=Expression
 	'se procederá a:'
-	body=InstructionBody
+	body += Instruction*
 	'Gracias por su atención.'
 ;
 

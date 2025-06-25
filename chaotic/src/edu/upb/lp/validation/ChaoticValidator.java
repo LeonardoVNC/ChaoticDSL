@@ -64,6 +64,7 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 		}
 	}
 	
+	/*
 	@Check
 	public void checkChannelUsage(Program p) {
 		ChannelSection cns = p.getChannelSection();
@@ -83,15 +84,11 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 					notUsedChannel, null);
 		}
 	}
+	*/
 	
 	@Check
 	public void checkChannelBody(ChannelOperation c) {
-		int instruccions = c.getBody().getAsignations().size();
-		instruccions += c.getBody().getPrints().size();
-		instruccions += c.getBody().getIfs().size();
-		instruccions += c.getBody().getWhiles().size();
-		instruccions += c.getBody().getChannels().size();
-		if (instruccions == 0) {
+		if (c.getBody().size() == 0) {
 			warning("El cuerpo del canal #" + c.getName() + " está vació.", c, null);
 		}
 	}
