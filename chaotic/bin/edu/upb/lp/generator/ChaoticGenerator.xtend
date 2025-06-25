@@ -121,7 +121,7 @@ class ChaoticGenerator extends AbstractGenerator {
 	def generateMain(ChatSection cs)
 	'''
 		public static void main(String[] args) throws Exception {
-			«generateBody(cs.body)»
+		«generateBody(cs.body)»
 		}
 	'''
 	
@@ -143,7 +143,7 @@ class ChaoticGenerator extends AbstractGenerator {
 	'''«e.user.name»'''
 	
 	def generateParenthesisExpression(ParenthesisExpression e) 
-	'''«'('+ generateFollowExpression(e.expression) +')'»'''
+	'''«'('+ generateExpression(e.expression) +')'»'''
 	
 	def generateFollowExpression(FollowExpression e)
 	'''«if (e.singleExpr !== null) generateSingleExpression(e.singleExpr)
