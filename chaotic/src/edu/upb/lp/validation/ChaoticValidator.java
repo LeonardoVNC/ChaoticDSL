@@ -41,7 +41,7 @@ import edu.upb.lp.chaotic.impl.ChannelCallImpl;
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
 public class ChaoticValidator extends AbstractChaoticValidator {
-	Set<String> javaKeyWords = new HashSet<>(Arrays.asList(
+	public static Set<String> javaKeyWords = new HashSet<>(Arrays.asList(
 			"String", "Integer", "Boolean", "abstract", "assert", "boolean", "break", "byte",
 	        "case", "catch", "char", "class", "const", "continue", "default", "do", "double", "else", 
 	        "enum", "extends", "final", "finally", "float", "for", "goto", "if", "implements", "import", 
@@ -49,24 +49,6 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 	        "public", "return", "short", "static", "strictfp", "super", "switch", "synchronized", "this", "throw", 
 	        "throws", "transient", "try", "void", "volatile", "while"
 		));
-	
-	private boolean isNotViableID(String id) {
-		return javaKeyWords.contains(id);
-	}
-	
-	@Check 
-	void checkUserDeclarationID(UserDeclaration ud) {
-		if (isNotViableID(ud.getName())) {
-			error("No se puede emplear \"" + ud.getName() + "\" como un ID.", ud, null);
-		}
-	}
-	
-	@Check
-	void checkChannelID(ChannelOperation co) {
-		if (isNotViableID(co.getName())) {
-			error("No se puede emplear \"" + co.getName() + "\" como un ID.", co, null);
-		}
-	}
 	
 	@Check
 	public void checkUsersID(UserSection us) {

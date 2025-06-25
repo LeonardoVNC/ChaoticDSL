@@ -32,6 +32,7 @@ import edu.upb.lp.chaotic.SingleOperator
 import edu.upb.lp.chaotic.FollowExpression
 import edu.upb.lp.chaotic.TempExpression
 import edu.upb.lp.chaotic.PairOperator
+import edu.upb.lp.validation.ChaoticValidator
 
 /**
  * Generates code from your model files on save.
@@ -44,6 +45,9 @@ class ChaoticGenerator extends AbstractGenerator {
 		val program = resource.allContents.head as Program;
 		fsa.generateFile(program.name+".java", generateProgram(program))
 	}
+	
+	
+	def nonForbiddenName(String s) '''«if (ChaoticValidator.javaKeyWords.contains(s)) "_"»«s»'''
 	
 	
 	def generateProgram(Program p) 
@@ -63,18 +67,17 @@ class ChaoticGenerator extends AbstractGenerator {
 	«
 	us.users.map
 	[userDeclaration | 
-	"private static " + typeMap.get(userDeclaration.type ) + " " + userDeclaration.name+";"]
+	"private static " + typeMap.get(userDeclaration.type ) + " " + nonForbiddenName(userDeclaration.name)+";"]
 	.join('\n')
 	»
 	'''
-	
 	
 	def generateMethods(ChannelSection cs)
 	'''
 	«
 	cs.getChannels.map
 	[channelOperation | 
-	"private static void " + channelOperation.name + "() throws Exception {\n"  + generateBody(channelOperation.body) + "}"].	
+	"private static void " + nonForbiddenName(channelOperation.name) + "() throws Exception {\n"  + generateBody(channelOperation.body) + "}"].	
 	join('\n')
 	»
 	'''
@@ -90,11 +93,11 @@ class ChaoticGenerator extends AbstractGenerator {
 	
 	dispatch def generateInstruction(UserAsignation userAsignation)
 	'''
-		«userAsignation.user.name» = «generateExpression(userAsignation.value)»;
+		«nonForbiddenName(userAsignation.user.name)» = «generateExpression(userAsignation.value)»;
 	'''
 	dispatch def generateInstruction(PrintLine print)
 	'''
-		System.out.println(«print.value.name»);
+		System.out.println(«nonForbiddenName(print.value.name)»);
 	'''
 	dispatch def generateInstruction(IfInstruction ifs)
 	'''
@@ -110,7 +113,7 @@ class ChaoticGenerator extends AbstractGenerator {
 	'''
 	dispatch def generateInstruction(ChannelCall channelCall)
 	'''
-		«channelCall.name.name»();
+		«nonForbiddenName(channelCall.name.name)»();
 	'''
 	dispatch def generateInstruction(BanException exception)
 	'''
@@ -140,7 +143,7 @@ class ChaoticGenerator extends AbstractGenerator {
 		else if (e.operator == SingleOperator.INT_PLUS_ONE) generateFollowExpression(e.expression)+' + 1'  »'''
 		
 	def generateUserDataReference(UserDataReference e) 
-	'''«e.user.name»'''
+	'''«nonForbiddenName(e.user.name)»'''
 	
 	def generateParenthesisExpression(ParenthesisExpression e) 
 	'''«'('+ generateExpression(e.expression) +')'»'''
