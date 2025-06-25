@@ -129,10 +129,7 @@ class ChaoticGenerator extends AbstractGenerator {
 	'''
 	
 	def generateExpression(Expression e) 
-	'''«if (e.singleExpr !== null) generateSingleExpression(e.singleExpr)
-		else if (e.singleOpExpr !== null) generateSingleOperatorExpression(e.singleOpExpr)
-		else if (e.userRef !== null) generateUserDataReference(e.userRef)
-		else if (e.parenthesisExpr !== null) generateParenthesisExpression(e.parenthesisExpr)»«generateTempExpression(e.second)»'''
+	'''«generateExpr(e.expr)»«generateTempExpression(e.second)»'''
 		
 	def generateSingleExpression(SingleExpression e) 
 	'''«generateLiteralValue(e.literal)»'''
@@ -149,10 +146,8 @@ class ChaoticGenerator extends AbstractGenerator {
 	'''«'('+ generateExpression(e.expression) +')'»'''
 	
 	def generateFollowExpression(FollowExpression e)
-	'''«if (e.singleExpr !== null) generateSingleExpression(e.singleExpr)
-		else if (e.singleOpExpr !== null) generateSingleOperatorExpression(e.singleOpExpr)
-		else if (e.userRef !== null) generateUserDataReference(e.userRef)
-		else if (e.parenthesisExpr !== null) generateParenthesisExpression(e.parenthesisExpr) »'''
+	'''«generateExpr(e.expr)»'''
+		
 	
 	def generateTempExpression(TempExpression e)
 	'''«if (e === null) return ''
@@ -172,6 +167,10 @@ class ChaoticGenerator extends AbstractGenerator {
 	dispatch def generateLiteralValue(BoolLiteral b)'''«b.value»'''
 	dispatch def generateLiteralValue(CadenasLiteral s)'''"«s.value»"'''
 	
+	dispatch def generateExpr(SingleExpression e)'''«generateSingleExpression(e)»'''
+	dispatch def generateExpr(SingleOperatorExpression e)'''«generateSingleOperatorExpression(e)»'''
+	dispatch def generateExpr(UserDataReference e)'''«generateUserDataReference(e)»'''
+	dispatch def generateExpr(ParenthesisExpression e)'''«generateParenthesisExpression(e)»'''
 	
 	val typeMap = newHashMap(
 		DataType.ENTERO_TYPE -> "int",

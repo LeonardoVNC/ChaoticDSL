@@ -25,12 +25,14 @@ import edu.upb.lp.chaotic.FollowExpression;
 import edu.upb.lp.chaotic.Instruction;
 import edu.upb.lp.chaotic.IntLiteral;
 import edu.upb.lp.chaotic.PairOperator;
+import edu.upb.lp.chaotic.ParenthesisExpression;
 import edu.upb.lp.chaotic.Program;
 import edu.upb.lp.chaotic.SingleExpression;
 import edu.upb.lp.chaotic.SingleOperator;
 import edu.upb.lp.chaotic.SingleOperatorExpression;
 import edu.upb.lp.chaotic.TempExpression;
 import edu.upb.lp.chaotic.UserAsignation;
+import edu.upb.lp.chaotic.UserDataReference;
 import edu.upb.lp.chaotic.UserDeclaration;
 import edu.upb.lp.chaotic.UserSection;
 import edu.upb.lp.chaotic.impl.ChannelCallImpl;
@@ -112,14 +114,17 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 	public DataType getDataTypeFromExp(Expression e) {
 		//Mi caso base son los literales y los llamados a variables
 		DataType firstType = null;
-		if (e.getSingleExpr() != null) {
-			firstType = getDataTypeFromSingleExpression(e.getSingleExpr());
-		} else if (e.getUserRef() != null) {
-			firstType = e.getUserRef().getUser().getType();
-		} else if (e.getParenthesisExpr() != null) {
-			firstType = getDataTypeFromExp(e.getParenthesisExpr().getExpression());
-		} else if (e.getSingleOpExpr() != null) {
-			firstType = getDataTypeFromSingleOperator(e.getSingleOpExpr().getOperator());
+		if (e.getExpr() instanceof SingleExpression ) {
+			firstType = getDataTypeFromSingleExpression((SingleExpression)e.getExpr());
+		} else if (e.getExpr() instanceof UserDataReference ) {
+			UserDataReference expr = (UserDataReference)e.getExpr();
+			firstType = expr.getUser().getType();
+		} else if (e.getExpr() instanceof ParenthesisExpression ) {
+			ParenthesisExpression expr = (ParenthesisExpression)e.getExpr();
+			firstType = getDataTypeFromExp(expr.getExpression());
+		} else if (e.getExpr() instanceof SingleOperatorExpression ) {
+			SingleOperatorExpression expr = (SingleOperatorExpression)e.getExpr();
+			firstType = getDataTypeFromSingleOperator(expr.getOperator());
 		} 
 		if (e.getSecond() != null) {
 			DataType expressionType = validateTemporalExpression(firstType, e.getSecond());
@@ -137,14 +142,17 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 	public DataType getDataTypeFromExp(FollowExpression e) {
 		//Mi caso base son los literales y los llamados a variables
 		DataType firstType = null;
-		if (e.getSingleExpr() != null) {
-			firstType = getDataTypeFromSingleExpression(e.getSingleExpr());
-		} else if (e.getUserRef() != null) {
-			firstType = e.getUserRef().getUser().getType();
-		} else if (e.getParenthesisExpr() != null) {
-			firstType = getDataTypeFromExp(e.getParenthesisExpr().getExpression());
-		} else if (e.getSingleOpExpr() != null) {
-			firstType = getDataTypeFromSingleOperator(e.getSingleOpExpr().getOperator());
+		if (e.getExpr() instanceof SingleExpression ) {
+			firstType = getDataTypeFromSingleExpression((SingleExpression)e.getExpr());
+		} else if (e.getExpr() instanceof UserDataReference ) {
+			UserDataReference expr = (UserDataReference)e.getExpr();
+			firstType = expr.getUser().getType();
+		} else if (e.getExpr() instanceof ParenthesisExpression ) {
+			ParenthesisExpression expr = (ParenthesisExpression)e.getExpr();
+			firstType = getDataTypeFromExp(expr.getExpression());
+		} else if (e.getExpr() instanceof SingleOperatorExpression ) {
+			SingleOperatorExpression expr = (SingleOperatorExpression)e.getExpr();
+			firstType = getDataTypeFromSingleOperator(expr.getOperator());
 		} 
 		return firstType;
 	}

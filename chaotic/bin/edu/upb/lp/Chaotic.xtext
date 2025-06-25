@@ -86,22 +86,12 @@ enum DataType:
 
 //Expressions
 Expression:
-	(
-		singleExpr = SingleExpression | 
-		singleOpExpr = SingleOperatorExpression |
-		userRef = UserDataReference |
-		parenthesisExpr = ParenthesisExpression
-	)
+	expr =  (SingleExpression | SingleOperatorExpression | UserDataReference | ParenthesisExpression)
 	(second = TempExpression)
 ;
 
 FollowExpression:
-	(
-		singleExpr = SingleExpression | 
-		singleOpExpr = SingleOperatorExpression |
-		userRef = UserDataReference |
-		parenthesisExpr = ParenthesisExpression
-	)
+	expr = (SingleExpression | SingleOperatorExpression | UserDataReference | ParenthesisExpression)
 ;
 
 TempExpression:
