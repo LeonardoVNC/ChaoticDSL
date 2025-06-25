@@ -38,8 +38,6 @@ import edu.upb.lp.chaotic.PairOperator
  * 
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#code-generation
  */
- 
-
 	
 class ChaoticGenerator extends AbstractGenerator {
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
@@ -84,10 +82,10 @@ class ChaoticGenerator extends AbstractGenerator {
 	
 	def generateBody(Instruction[] body)
 	'''
-			«
-			body.map
-			[instruction | generateInstruction(instruction)].join('')
-			»
+	«
+	body.map
+	[instruction | "\t" + generateInstruction(instruction)].join('')
+	»
 	'''
 	
 	dispatch def generateInstruction(UserAsignation userAsignation)
@@ -102,13 +100,13 @@ class ChaoticGenerator extends AbstractGenerator {
 	'''
 		if («generateExpression(ifs.condition)») {
 			«generateBody(ifs.body)»
-		}
+		«"\t"»}
 	'''
 	dispatch def generateInstruction(WhileInstruction whiles)
 	'''
 		while («generateExpression(whiles.condition)») {
 			«generateBody(whiles.body)»
-		}
+		«"\t"»}
 	'''
 	dispatch def generateInstruction(ChannelCall channelCall)
 	'''
@@ -118,6 +116,7 @@ class ChaoticGenerator extends AbstractGenerator {
 	'''
 		throw new Exception(«if (exception.isDescription_flag) {"\"" + exception.description.value + "\""}»);
 	'''
+	
 	
 	def generateMain(ChatSection cs)
 	'''
@@ -131,14 +130,18 @@ class ChaoticGenerator extends AbstractGenerator {
 		else if (e.singleOpExpr !== null) generateSingleOperatorExpression(e.singleOpExpr)
 		else if (e.userRef !== null) generateUserDataReference(e.userRef)
 		else if (e.parenthesisExpr !== null) generateParenthesisExpression(e.parenthesisExpr)»«generateTempExpression(e.second)»'''
+		
 	def generateSingleExpression(SingleExpression e) 
 	'''«generateLiteralValue(e.literal)»'''
+	
 	def generateSingleOperatorExpression(SingleOperatorExpression e) 
 	'''«if (e.operator == SingleOperator.BOOL_NEGATION) '!'+generateFollowExpression(e.expression)
 		else if (e.operator == SingleOperator.INT_NEGATIVE) '-'+generateFollowExpression(e.expression)
 		else if (e.operator == SingleOperator.INT_PLUS_ONE) generateFollowExpression(e.expression)+' + 1'  »'''
+		
 	def generateUserDataReference(UserDataReference e) 
 	'''«e.user.name»'''
+	
 	def generateParenthesisExpression(ParenthesisExpression e) 
 	'''«'('+ generateFollowExpression(e.expression) +')'»'''
 	
@@ -148,19 +151,18 @@ class ChaoticGenerator extends AbstractGenerator {
 		else if (e.userRef !== null) generateUserDataReference(e.userRef)
 		else if (e.parenthesisExpr !== null) generateParenthesisExpression(e.parenthesisExpr) »'''
 	
-	//Trata de factorizar
 	def generateTempExpression(TempExpression e)
-	'''«if (e === null) ''
-		else if (e.operador == PairOperator.PLUS)' + ' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)
-		else if (e.operador == PairOperator.LESS)' - ' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)
-		else if (e.operador == PairOperator.MULT)' * ' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)
-		else if (e.operador == PairOperator.DIV)' / ' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)
-		else if (e.operador == PairOperator.AND)' && ' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)
-		else if (e.operador == PairOperator.OR)' | |' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)
-		else if (e.operador == PairOperator.EQUAL || e.operador == PairOperator.EQUAL_P)' == ' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)
-		else if (e.operador == PairOperator.GREATER || e.operador == PairOperator.GREATER_P)' > ' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)
-		else if (e.operador == PairOperator.GREATER_EQ || e.operador == PairOperator.GREATER_EQ_P)' >= ' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)
-		else if (e.operador == PairOperator.CONCAT)' + ' + generateFollowExpression(e.secondValue) + generateTempExpression(e.follow)»'''
+	'''«if (e === null) return ''
+		else if (e.operador == PairOperator.PLUS)' + '
+		else if (e.operador == PairOperator.LESS)' - '
+		else if (e.operador == PairOperator.MULT)' * '
+		else if (e.operador == PairOperator.DIV)' / '
+		else if (e.operador == PairOperator.AND)' && '
+		else if (e.operador == PairOperator.OR)' | |'
+		else if (e.operador == PairOperator.EQUAL || e.operador == PairOperator.EQUAL_P)' == '
+		else if (e.operador == PairOperator.GREATER || e.operador == PairOperator.GREATER_P)' > '
+		else if (e.operador == PairOperator.GREATER_EQ || e.operador == PairOperator.GREATER_EQ_P)' >= '
+		else if (e.operador == PairOperator.CONCAT)' + '»«generateFollowExpression(e.secondValue)»«generateTempExpression(e.follow)»'''
 
 	dispatch def generateLiteralValue(IntLiteral i)'''«i.value»'''
 	dispatch def generateLiteralValue(DecLiteral i)'''«i.mainValue + "." + i.decimalValue»'''
@@ -174,5 +176,4 @@ class ChaoticGenerator extends AbstractGenerator {
 		DataType.CADENAS_TYPE -> "String",
 		DataType.BOOL_TYPE -> "Boolean"
 	);
-
 }
