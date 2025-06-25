@@ -4,6 +4,7 @@ generate chaotic "http://www.upb.edu/lp/Chaotic"
 
 //Estructura del programa
 Program:	
+	'Te damos la bienvenida a : ' name = ID
 	userSection = UserSection
 	channelSection = ChannelSection
 	execution = ChatSection
