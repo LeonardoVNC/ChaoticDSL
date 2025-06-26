@@ -50,7 +50,14 @@ class ChaoticGenerator extends AbstractGenerator {
 	}
 	
 	
-	def nonForbiddenName(String s) '''«if (ChaoticValidator.javaKeyWords.contains(s)) "_"»«s»'''
+	def nonForbiddenNameUser(String s) 
+	'''«{idsSet.add(s) if (ChaoticValidator.javaKeyWords.contains(s)) "_"}»«s»'''
+	
+	def nonForbiddenNameThread(String s) 
+	'''«{if (idsSet.contains(s)) s+"Thread" else if (ChaoticValidator.javaKeyWords.contains(s)) "_"+s else s}»'''
+	
+	def nonForbiddenNameChannel(String s) 
+	'''«{idsSet.add(s) if (ChaoticValidator.javaKeyWords.contains(s)) "_"}»«s»'''
 	
 	
 	def generateProgram(Program p) 
@@ -72,7 +79,7 @@ class ChaoticGenerator extends AbstractGenerator {
 	«
 	us.users.map
 	[userDeclaration | 
-	"private static " + typeMap.get(userDeclaration.type ) + " " + nonForbiddenName(userDeclaration.name)+";"]
+	"private static " + typeMap.get(userDeclaration.type ) + " " + nonForbiddenNameUser(userDeclaration.name)+";"]
 	.join('\n')
 	»
 	'''
@@ -82,7 +89,7 @@ class ChaoticGenerator extends AbstractGenerator {
 	«
 	cs.getChannels.map
 	[channelOperation | 
-	"private static void " + nonForbiddenName(channelOperation.name) + "() throws Exception {\n"  + generateBody(channelOperation.body) + "}"].	
+	"private static void " + nonForbiddenNameChannel(channelOperation.name) + "() throws Exception {\n"  + generateBody(channelOperation.body) + "}"].	
 	join('\n')
 	»
 	'''
@@ -98,11 +105,11 @@ class ChaoticGenerator extends AbstractGenerator {
 	
 	dispatch def generateInstruction(UserAsignation userAsignation)
 	'''
-		«nonForbiddenName(userAsignation.user.name)» = «generateExpression(userAsignation.value)»;
+		«nonForbiddenNameUser(userAsignation.user.name)» = «generateExpression(userAsignation.value)»;
 	'''
 	dispatch def generateInstruction(PrintLine print)
 	'''
-		System.out.println(«nonForbiddenName(print.value.name)»);
+		System.out.println(«nonForbiddenNameUser(print.value.name)»);
 	'''
 	dispatch def generateInstruction(IfInstruction ifs)
 	'''
@@ -118,7 +125,7 @@ class ChaoticGenerator extends AbstractGenerator {
 	'''
 	dispatch def generateInstruction(ChannelCall channelCall)
 	'''
-		«nonForbiddenName(channelCall.name.name)»();
+		«nonForbiddenNameChannel(channelCall.name.name)»();
 	'''
 	dispatch def generateInstruction(BanException exception)
 	'''
@@ -126,7 +133,7 @@ class ChaoticGenerator extends AbstractGenerator {
 	'''
 	dispatch def generateInstruction(ThreadAsignation threadAsign)
 	'''
-		«nonForbiddenName(threadAsign.thread.name)»[«generateFollowExpression(threadAsign.pos)»] = «generateExpression(threadAsign.value)»;
+		«nonForbiddenNameThread(threadAsign.thread.name)»[«generateFollowExpression(threadAsign.pos)»] = «generateExpression(threadAsign.value)»;
 	'''
 	
 	
@@ -134,7 +141,7 @@ class ChaoticGenerator extends AbstractGenerator {
 	'''
 		«if (ts.isThread_flag) { 
 			ts.threads.map
-			[threadDeclaration | "private static " + typeMap.get(threadDeclaration.type) + "[] " + nonForbiddenName(threadDeclaration.name) + 
+			[threadDeclaration | "private static " + typeMap.get(threadDeclaration.type) + "[] " + nonForbiddenNameThread(threadDeclaration.name) + 
 			" = new " + typeMap.get(threadDeclaration.type) + "[" + threadDeclaration.size.value + "];"].
 			join('\n')
 		} »
@@ -160,13 +167,13 @@ class ChaoticGenerator extends AbstractGenerator {
 		else if (e.operator == SingleOperator.INT_PLUS_ONE) generateFollowExpression(e.expression)+' + 1'  »'''
 		
 	def generateUserDataReference(UserDataReference e) 
-	'''«nonForbiddenName(e.user.name)»'''
+	'''«nonForbiddenNameUser(e.user.name)»'''
 	
 	def generateParenthesisExpression(ParenthesisExpression e) 
 	'''«'('+ generateExpression(e.expression) +')'»'''
 	
 	def generateThreadReference(ThreadDataReference e)
-	'''«nonForbiddenName(e.thread.name)»[«generateFollowExpression(e.pos)»]'''
+	'''«nonForbiddenNameThread(e.thread.name)»[«generateFollowExpression(e.pos)»]'''
 	
 	def generateFollowExpression(FollowExpression e)
 	'''«generateExpr(e.expr)»'''
@@ -202,4 +209,6 @@ class ChaoticGenerator extends AbstractGenerator {
 		DataType.CADENAS_TYPE -> "String",
 		DataType.BOOL_TYPE -> "Boolean"
 	);
+	
+	val idsSet = newHashSet();
 }
