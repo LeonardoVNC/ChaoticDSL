@@ -31,6 +31,10 @@ import edu.upb.lp.chaotic.SingleExpression;
 import edu.upb.lp.chaotic.SingleOperator;
 import edu.upb.lp.chaotic.SingleOperatorExpression;
 import edu.upb.lp.chaotic.TempExpression;
+import edu.upb.lp.chaotic.ThreadAsignation;
+import edu.upb.lp.chaotic.ThreadDataReference;
+import edu.upb.lp.chaotic.ThreadDeclaration;
+import edu.upb.lp.chaotic.ThreadSection;
 import edu.upb.lp.chaotic.UserAsignation;
 import edu.upb.lp.chaotic.UserDataReference;
 import edu.upb.lp.chaotic.UserDeclaration;
@@ -81,6 +85,20 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 	}
 	
 	@Check
+	public void checkThreadsID(ThreadSection ts) {
+		Set<String> threads = new HashSet<>();
+		for (ThreadDeclaration threadDeclaration : ts.getThreads()) {
+			String currentThreadID = threadDeclaration.getName();
+			if(threads.contains(currentThreadID)) {
+				error("El nombre \"" + currentThreadID + "\" ya está siendo utilizado por otro canal.",
+						threadDeclaration, null);
+			} else {
+				threads.add(currentThreadID);
+			}
+		}
+	}
+	
+	@Check
 	public void checkChannelUsage(Program p) {
 		ChannelSection cns = p.getChannelSection();
 		ChatSection cts = p.getExecution();
@@ -110,6 +128,12 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 		}
 	}
 	
+	@Check
+	public void checkThreadSize(ThreadDeclaration td) {
+		if(td.getSize().getValue() <= 0) {
+			error("No se pueden crear hilos sin participantes", td, null);
+		}
+	}
 	
 	public DataType getDataTypeFromExp(Expression e) {
 		//Mi caso base son los literales y los llamados a variables
@@ -125,7 +149,10 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 		} else if (e.getExpr() instanceof SingleOperatorExpression ) {
 			SingleOperatorExpression expr = (SingleOperatorExpression)e.getExpr();
 			firstType = getDataTypeFromSingleOperator(expr.getOperator());
-		} 
+		} else if (e.getExpr() instanceof ThreadDataReference) {
+			ThreadDataReference expr = (ThreadDataReference)e.getExpr();
+			firstType = expr.getThread().getType();
+		}
 		if (e.getSecond() != null) {
 			DataType expressionType = validateTemporalExpression(firstType, e.getSecond());
 			//Operación inválida lanza un null
@@ -153,10 +180,13 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 		} else if (e.getExpr() instanceof SingleOperatorExpression ) {
 			SingleOperatorExpression expr = (SingleOperatorExpression)e.getExpr();
 			firstType = getDataTypeFromSingleOperator(expr.getOperator());
-		} 
+		}  else if (e.getExpr() instanceof ThreadDataReference) {
+			ThreadDataReference expr = (ThreadDataReference)e.getExpr();
+			firstType = expr.getThread().getType();
+		}
 		return firstType;
 	}
-	
+
 	public DataType getDataTypeFromSingleExpression(SingleExpression se) {
 		EObject literal = se.getLiteral();
 		if (literal instanceof IntLiteral) {
@@ -232,6 +262,23 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 			error("El usuario @" + ua.getUser().getName() + " forma parte de $" + userType + 
 					", no de $" + exprType,
 					ua, null);
+		}
+	}
+	
+	@Check
+	public void checkThreadAsignation(ThreadAsignation ta) {
+		DataType threadType = ta.getThread().getType();
+		DataType exprType = getDataTypeFromExp(ta.getValue());
+		if (exprType == null) {
+			error ("Operaciones inválidas entre estos tipos de datos. Trate de operar con paréntesis", ta, null);
+		} else if (threadType != exprType) {
+			error("El hilo #" + ta.getThread().getName() + " está destinado para el rol $" + threadType
+					+ ", no para $" + exprType, ta, null);
+		}
+		
+		DataType positionType = getDataTypeFromExp(ta.getPos());
+		if (positionType != DataType.ENTERO_TYPE) {
+			error("El último mensaje debe formar parte de operaciones para " + DataType.ENTERO_TYPE.getName(), ta, null);
 		}
 	}
 	

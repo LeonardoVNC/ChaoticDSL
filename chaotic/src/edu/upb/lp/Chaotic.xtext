@@ -93,7 +93,7 @@ ChannelCall:
 ;
 
 ThreadAsignation:
-	'El hilo' thread=[ThreadDeclaration] 'ha cambiado su topic a:' value=Expression '. Último mensaje: ' pos=FollowExpression 
+	'El hilo' '#'thread=[ThreadDeclaration] 'ha cambiado su topic a:' value=Expression '. Último mensaje: ' pos=FollowExpression 
 ;
 
 //Tipos de Datos
