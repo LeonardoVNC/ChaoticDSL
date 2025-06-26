@@ -33,6 +33,9 @@ import edu.upb.lp.chaotic.FollowExpression
 import edu.upb.lp.chaotic.TempExpression
 import edu.upb.lp.chaotic.PairOperator
 import edu.upb.lp.validation.ChaoticValidator
+import edu.upb.lp.chaotic.ThreadSection
+import edu.upb.lp.chaotic.ThreadAsignation
+import edu.upb.lp.chaotic.ThreadDataReference
 
 /**
  * Generates code from your model files on save.
@@ -54,6 +57,8 @@ class ChaoticGenerator extends AbstractGenerator {
 	'''
 		public class «p.name» {
 			«generateFields(p.userSection)»
+						
+			«generateThreads(p.threadSection)»
 			
 			«generateMethods(p.channelSection)»
 			
@@ -119,7 +124,22 @@ class ChaoticGenerator extends AbstractGenerator {
 	'''
 		throw new Exception(«if (exception.isDescription_flag) {"\"" + exception.description.value + "\""}»);
 	'''
+	dispatch def generateInstruction(ThreadAsignation threadAsign)
+	'''
+		«nonForbiddenName(threadAsign.thread.name)»[«generateFollowExpression(threadAsign.pos)»] = «generateExpression(threadAsign.value)»;
+	'''
 	
+	
+	def generateThreads(ThreadSection ts)
+	'''
+		«if (ts.isThread_flag) { 
+			ts.threads.map
+			[threadDeclaration | "private static " + typeMap.get(threadDeclaration.type) + "[] " + nonForbiddenName(threadDeclaration.name) + 
+			" = new " + typeMap.get(threadDeclaration.type) + "[" + threadDeclaration.size.value + "];"].
+			join('\n')
+		} »
+	'''
+
 	
 	def generateMain(ChatSection cs)
 	'''
@@ -144,6 +164,9 @@ class ChaoticGenerator extends AbstractGenerator {
 	
 	def generateParenthesisExpression(ParenthesisExpression e) 
 	'''«'('+ generateExpression(e.expression) +')'»'''
+	
+	def generateThreadReference(ThreadDataReference e)
+	'''«nonForbiddenName(e.thread.name)»[«generateFollowExpression(e.pos)»]'''
 	
 	def generateFollowExpression(FollowExpression e)
 	'''«generateExpr(e.expr)»'''
@@ -171,6 +194,7 @@ class ChaoticGenerator extends AbstractGenerator {
 	dispatch def generateExpr(SingleOperatorExpression e)'''«generateSingleOperatorExpression(e)»'''
 	dispatch def generateExpr(UserDataReference e)'''«generateUserDataReference(e)»'''
 	dispatch def generateExpr(ParenthesisExpression e)'''«generateParenthesisExpression(e)»'''
+	dispatch def generateExpr(ThreadDataReference e)'''«generateThreadReference(e)»'''
 	
 	val typeMap = newHashMap(
 		DataType.ENTERO_TYPE -> "int",
