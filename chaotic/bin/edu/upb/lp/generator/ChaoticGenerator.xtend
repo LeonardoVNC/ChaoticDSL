@@ -138,13 +138,14 @@ class ChaoticGenerator extends AbstractGenerator {
 	
 	
 	def generateThreads(ThreadSection ts)
-	'''
+	'''«IF ts != null»
 		«if (ts.isThread_flag) { 
 			ts.threads.map
 			[threadDeclaration | "private static " + typeMap.get(threadDeclaration.type) + "[] " + nonForbiddenNameThread(threadDeclaration.name) + 
 			" = new " + typeMap.get(threadDeclaration.type) + "[" + threadDeclaration.size.value + "];"].
 			join('\n')
 		} »
+		«ENDIF»
 	'''
 
 	
