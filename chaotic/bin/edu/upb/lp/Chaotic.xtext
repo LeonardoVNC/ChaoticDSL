@@ -6,6 +6,7 @@ generate chaotic "http://www.upb.edu/lp/Chaotic"
 Program:	
 	'Te damos la bienvenida a : ' name = ID
 	userSection = UserSection
+	threadSection = ThreadSection?
 	channelSection = ChannelSection
 	execution = ChatSection
 ;
@@ -13,6 +14,11 @@ Program:
 UserSection:
 	{UserSection} 'Usuarios conectados:'
 	(users += UserDeclaration+ | 'Vaya, parece que no hay nadie.')
+;
+
+ThreadSection:
+	thread_flag ?= 'Hilos abiertos:'
+	threads += ThreadDeclaration+
 ;
 
 ChannelSection:
@@ -32,6 +38,13 @@ UserDeclaration:
 	'Saluden a' '@' name=ID 'el nuevo miembro de' '$' type=DataType '.'
 ;
 
+//Gramática para ThreadSection, Listas
+ThreadDeclaration:
+	'Se ha abierto un nuevo hilo llamado'
+	'#' name=ID
+	'disponible para' size= IntLiteral 'miembros de' '$' type=DataType '.'
+;
+
 //Gramática para ChannelSection
 ChannelOperation:
 	'Se ha creado un nuevo canal llamado' 
@@ -45,7 +58,7 @@ ParamField:
 ;
 
 Instruction:
-	mode = (UserAsignation | PrintLine | IfInstruction | WhileInstruction | ChannelCall | BanException)
+	mode = (UserAsignation | PrintLine | IfInstruction | WhileInstruction | ChannelCall | BanException | ThreadAsignation)
 ;
 
 //Operaciones - Body
@@ -79,6 +92,10 @@ ChannelCall:
 	'y dejen de molestar aca'
 ;
 
+ThreadAsignation:
+	'El hilo' thread=[ThreadDeclaration] 'ha cambiado su topic a:' value=Expression '. Último mensaje: ' pos=FollowExpression 
+;
+
 //Tipos de Datos
 enum DataType:
 	EnteroType = 'R20s' | BoolType='Teleco' | CadenasType = 'ComeLibros' | DecType='LosReales'
@@ -86,12 +103,12 @@ enum DataType:
 
 //Expressions
 Expression:
-	expr =  (SingleExpression | SingleOperatorExpression | UserDataReference | ParenthesisExpression)
+	expr =  (SingleExpression | SingleOperatorExpression | UserDataReference | ParenthesisExpression | ThreadDataReference)
 	(second = TempExpression)
 ;
 
 FollowExpression:
-	expr = (SingleExpression | SingleOperatorExpression | UserDataReference | ParenthesisExpression)
+	expr = (SingleExpression | SingleOperatorExpression | UserDataReference | ParenthesisExpression | ThreadDataReference)
 ;
 
 TempExpression:
@@ -129,6 +146,10 @@ UserDataReference:
 
 ParenthesisExpression:
 	'(' expression = Expression ')'
+;
+
+ThreadDataReference:
+	'Charlando en' thread=[ThreadDeclaration] 'último mensaje:' pos=FollowExpression 
 ;
 
 //Literals
