@@ -217,7 +217,7 @@ public class ChaoticValidator extends AbstractChaoticValidator {
 		DataType secondType = getDataTypeFromExp(second.getSecondValue());
 		DataType expressionType = null;
 		
-		if (operator == PairOperator.PLUS|| operator == PairOperator.LESS|| operator == PairOperator.MULT|| operator == PairOperator.DIV) {
+		if (operator == PairOperator.PLUS|| operator == PairOperator.LESS|| operator == PairOperator.MULT|| operator == PairOperator.DIV|| operator == PairOperator.MOD) {
 			if (firstType == DataType.ENTERO_TYPE && secondType == DataType.ENTERO_TYPE) expressionType = DataType.ENTERO_TYPE;
 			if (firstType == DataType.ENTERO_TYPE && secondType == DataType.DEC_TYPE ||
 				firstType == DataType.DEC_TYPE && secondType == DataType.ENTERO_TYPE ||

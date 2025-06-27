@@ -66,6 +66,7 @@ class ChaoticGenerator extends AbstractGenerator {
 			«generateFields(p.userSection)»
 			«generateThreads(p.threadSection)»
 			«generateMethods(p.channelSection)»
+			
 			«generateMain(p.execution)»
 		}
 	'''
@@ -180,6 +181,7 @@ class ChaoticGenerator extends AbstractGenerator {
 		else if (e.operador == PairOperator.LESS)' - '
 		else if (e.operador == PairOperator.MULT)' * '
 		else if (e.operador == PairOperator.DIV)' / '
+		else if (e.operador == PairOperator.MOD) ' % '
 		else if (e.operador == PairOperator.AND)' && '
 		else if (e.operador == PairOperator.OR)' | |'
 		else if (e.operador == PairOperator.EQUAL || e.operador == PairOperator.EQUAL_P)' == '
@@ -202,7 +204,7 @@ class ChaoticGenerator extends AbstractGenerator {
 		DataType.ENTERO_TYPE -> "int",
 		DataType.DEC_TYPE -> "double",
 		DataType.CADENAS_TYPE -> "String",
-		DataType.BOOL_TYPE -> "Boolean"
+		DataType.BOOL_TYPE -> "boolean"
 	);
 	
 	val idsSet = newHashSet();

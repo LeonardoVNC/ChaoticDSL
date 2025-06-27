@@ -135,7 +135,7 @@ ThreadDataReference:
 
 //Operadores
 enum PairOperator:
-	Plus = 'sumando a' | Less = 'restando a' | Mult = 'multiplicando a' | Div = 'dividiendo a' | 
+	Plus = 'sumando a' | Less = 'restando a' | Mult = 'multiplicando a' | Div = 'dividiendo a' | Mod = 'le saca su M(ódulo) a' |
 	And = 'y además' | Or = 'o por otro lado' | 
 	Equal = 'es igual a' | EqualP = 'sea igual a' | 
 	Greater = 'le gana a' | GreaterP = 'le gane a' | 
