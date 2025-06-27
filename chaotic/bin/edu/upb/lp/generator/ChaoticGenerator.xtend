@@ -64,11 +64,8 @@ class ChaoticGenerator extends AbstractGenerator {
 	'''
 		public class «p.name» {
 			«generateFields(p.userSection)»
-						
 			«generateThreads(p.threadSection)»
-			
 			«generateMethods(p.channelSection)»
-			
 			«generateMain(p.execution)»
 		}
 	'''
@@ -84,6 +81,15 @@ class ChaoticGenerator extends AbstractGenerator {
 	»
 	'''
 	
+	def generateThreads(ThreadSection ts)
+	'''«if (ts !== null && ts.isThread_flag) { 
+			ts.threads.map
+			[threadDeclaration | "private static " + typeMap.get(threadDeclaration.type) + "[] " + nonForbiddenNameThread(threadDeclaration.name) + 
+			" = new " + typeMap.get(threadDeclaration.type) + "[" + threadDeclaration.size.value + "];"].
+			join('\n')
+		} else {"\n"} »
+	'''
+	
 	def generateMethods(ChannelSection cs)
 	'''
 	«
@@ -93,7 +99,6 @@ class ChaoticGenerator extends AbstractGenerator {
 	join('\n')
 	»
 	'''
-	
 	
 	def generateBody(Instruction[] body)
 	'''
@@ -135,18 +140,6 @@ class ChaoticGenerator extends AbstractGenerator {
 	'''
 		«nonForbiddenNameThread(threadAsign.thread.name)»[«generateFollowExpression(threadAsign.pos)»] = «generateExpression(threadAsign.value)»;
 	'''
-	
-	
-	def generateThreads(ThreadSection ts)
-	'''«IF ts != null»
-		«if (ts.isThread_flag) { 
-			ts.threads.map
-			[threadDeclaration | "private static " + typeMap.get(threadDeclaration.type) + "[] " + nonForbiddenNameThread(threadDeclaration.name) + 
-			" = new " + typeMap.get(threadDeclaration.type) + "[" + threadDeclaration.size.value + "];"].
-			join('\n')
-		} »
-		«ENDIF»
-	'''
 
 	
 	def generateMain(ChatSection cs)
@@ -155,6 +148,7 @@ class ChaoticGenerator extends AbstractGenerator {
 		«generateBody(cs.body)»
 		}
 	'''
+	
 	
 	def generateExpression(Expression e) 
 	'''«generateExpr(e.expr)»«generateTempExpression(e.second)»'''

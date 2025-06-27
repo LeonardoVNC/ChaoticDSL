@@ -53,15 +53,11 @@ ChannelOperation:
 	'Esperemos sea de su agrado.'
 ;
 
-ParamField:
-	'$' type=DataType 'también llamado' name=ID
-;
-
 Instruction:
 	mode = (UserAsignation | PrintLine | IfInstruction | WhileInstruction | ChannelCall | BanException | ThreadAsignation)
 ;
 
-//Operaciones - Body
+//Instrucciones - Body
 UserAsignation:
 	user=[UserDeclaration] 'ha cambiado su descripción a:' value=Expression'.'
 ;
@@ -92,13 +88,15 @@ ChannelCall:
 	'y dejen de molestar aca'
 ;
 
-ThreadAsignation:
-	'El hilo' '#'thread=[ThreadDeclaration] 'ha cambiado su topic a:' value=Expression '. Último mensaje: ' pos=FollowExpression 
+BanException:
+	{BanException} 
+	'Silenciar todos los canales del servidor.'
+	(description_flag ?= 'Motivo:' description = CadenasLiteral)?
+	'Traten de cumplir las reglas del seridor.'
 ;
 
-//Tipos de Datos
-enum DataType:
-	EnteroType = 'R20s' | BoolType='Teleco' | CadenasType = 'ComeLibros' | DecType='LosReales'
+ThreadAsignation:
+	'El hilo' '#'thread=[ThreadDeclaration] 'ha cambiado su topic a:' value=Expression '. Último mensaje: ' pos=FollowExpression 
 ;
 
 //Expressions
@@ -115,11 +113,27 @@ TempExpression:
 	(operador=PairOperator secondValue=FollowExpression follow=TempExpression)?
 ;
 
-
 SingleExpression:
 	literal = (IntLiteral | DecLiteral | BoolLiteral | CadenasLiteral) 
 ;
 
+SingleOperatorExpression:
+	operator = SingleOperator expression=FollowExpression
+;
+
+UserDataReference:
+	'@' user=[UserDeclaration]
+;
+
+ParenthesisExpression:
+	'(' expression = Expression ')'
+;
+
+ThreadDataReference:
+	'Charlando en' thread=[ThreadDeclaration] 'último mensaje:' pos=FollowExpression 
+;
+
+//Operadores
 enum PairOperator:
 	Plus = 'sumando a' | Less = 'restando a' | Mult = 'multiplicando a' | Div = 'dividiendo a' | 
 	And = 'y además' | Or = 'o por otro lado' | 
@@ -135,21 +149,9 @@ enum SingleOperator:
 	IntPlusOne = 'Mejorando poco a poco'
 ;
 
-SingleOperatorExpression:
-	operator = SingleOperator expression=FollowExpression
-;
-
-
-UserDataReference:
-	'@' user=[UserDeclaration]
-;
-
-ParenthesisExpression:
-	'(' expression = Expression ')'
-;
-
-ThreadDataReference:
-	'Charlando en' thread=[ThreadDeclaration] 'último mensaje:' pos=FollowExpression 
+//Tipos de Datos
+enum DataType:
+	EnteroType = 'R20s' | BoolType='Teleco' | CadenasType = 'ComeLibros' | DecType='LosReales'
 ;
 
 //Literals
@@ -168,14 +170,6 @@ BoolLiteral:
 CadenasLiteral:
 	value=STRING
 ;
-
-BanException:
-	{BanException} 
-	'Silenciar todos los canales del servidor.'
-	(description_flag ?= 'Motivo:' description = CadenasLiteral)?
-	'Traten de cumplir las reglas del seridor.'
-;
-
 
 //Comentarios
 @Override 
