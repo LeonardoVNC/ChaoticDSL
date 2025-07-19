@@ -20,6 +20,9 @@ Esta herramienta genera una gran cantidad de archivos y código, el cual muchas 
 
     Busque dentro del directorio `chaotic/src/edu.upb.lp` el archivo `Chaotic.xtext` y abralo. Dentro, copie el contenido de [Chaotic.xtext](chaotic/src/edu/upb/lp/Chaotic.xtext) ubicado en este repositorio.
 
+>[!Tip]
+>Para empezar a programar en Chaotic, resulta útil darle un vistazo al léxico y la sintáxis del lenguaje, ambos se encuentran dentro del archivo que acaba de copiar.
+
 * **Generar archivos**
 
     En el directorio actual se encuentra el archivo `GenerateChaotic.mwe2`, haga click derecho, busque la opción `Run as` y seleccione la opción `Run Workflow`.
@@ -40,4 +43,9 @@ Esta herramienta genera una gran cantidad de archivos y código, el cual muchas 
 
     Una vez copiados todos los archivos el proyecto esta listo para probarse, para esto, vuelva a lanzar el proceso `Launch Runtime Eclipse`. Una vez abierto, puede crear cualquier archivo con la terminación `.chat` y empezar a programar, cada vez que guarde archivos con esta terminación, se generará código Java automáticamente, el cual puede ejecutar y probar.
 
-    Un ejemplo de archivo en Chaotic se puede encontrar en [Fibonacci.chat](./Fibonacci.chat) 
+>[!Important]
+>La nueva instancia de Eclipse viene acompañada con algunas herramientas para empezar a programar en Chaotic, por lo que usar `Ctrl+Espacio` para recibir sugerencias resulta muy útil.
+
+
+>[!Tip]
+>Un ejemplo de archivo en Chaotic se puede encontrar en [Fibonacci.chat](./Fibonacci.chat) . Puede revisarlo o probar su ejecución para familiarizarse con el lenguaje.
