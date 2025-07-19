@@ -1,0 +1,49 @@
+Te damos la bienvenida a : Fibonacci
+
+Usuarios conectados:
+	Ah si, estos usuarios son para la ejecución normal de fibonacci
+	Saluden a @a el nuevo miembro de $R20s.
+	Saluden a @b el nuevo miembro de $R20s.
+	Saluden a @i el nuevo miembro de $R20s.
+	Saluden a @next el nuevo miembro de $R20s.
+	
+	Ah si, estos otros usuarios son para guardar la respuesta y el input
+	Saluden a @n el nuevo miembro de $R20s.
+	Saluden a @res el nuevo miembro de $ComeLibros.
+	
+Canales disponibles:
+	Ah si, este canal sirve para imprimir los números de fibonacci, usa @n como parámetro y @res como string de respuesta
+	Se ha creado un nuevo canal llamado #fibonacci:
+		a ha cambiado su descripción a: 0.
+		b ha cambiado su descripción a: 1.
+		i ha cambiado su descripción a: 0.
+		res ha cambiado su descripción a: "".
+		
+		ATENCION! Si 0 le gana a @n procederemos a:
+			Silenciar todos los canales del servidor.
+				Motivo: "No se puede realizar la sucesión de Fibonacci con valores negativos."
+			Traten de cumplir las reglas del seridor.
+		Gracias por su atención.
+		
+		AVISO! Mientras @n le gane a @i se procederá a:
+			res ha cambiado su descripción a: @res junto a @a junto a " ".
+			next ha cambiado su descripción a: @a sumando a @b.
+			a ha cambiado su descripción a: @b.
+			b ha cambiado su descripción a: @next.
+			i ha cambiado su descripción a: Mejorando poco a poco @i.
+		Gracias por su atención.
+		
+		Que tal todo res ?
+	Esperemos sea de su agrado.
+	
+	
+Chat #General
+	Hola muchachada!
+	Por cierto... este es un bloque de comentarios
+	se supone que nada malo puede pasar si comento weas aqui
+	de momento va quedando pintudo el lenguaje wajaj
+	nada eso...
+	n ha cambiado su descripción a: 9.
+	Nada que ver su conversacion, vayan a #fibonacci y dejen de molestar aca
+	Mañana hay examen de compilación, nos vimo :p
+
